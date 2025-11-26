@@ -1,0 +1,5 @@
+x64
+*.vcxproj.*
+FoxViewPPM.exe
+.vs
+output.ppm
