@@ -135,6 +135,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="weekrays\framebuffer.h" />
     <ClInclude Include="weekrays\material.h" />
     <ClInclude Include="weekrays\camera.h" />
     <ClInclude Include="weekrays\all.h" />

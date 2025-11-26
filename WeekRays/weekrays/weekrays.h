@@ -10,6 +10,12 @@
 #include <limits>
 #include <numbers>
 
+#include <fstream>
+#include <chrono>
+#include <print>
+#include <mutex>
+#include <span>
+
 const double infinity = std::numeric_limits<double>::infinity();
 const double pi = std::numbers::pi;
 

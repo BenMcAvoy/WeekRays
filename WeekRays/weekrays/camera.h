@@ -2,6 +2,7 @@
 
 #include "hittable.h"
 #include "material.h"
+#include "framebuffer.h"
 
 class Camera {
 public:
@@ -22,22 +23,41 @@ public:
 		pixelDeltaV_ = vertical_ / imageHeight; // vertical increment per pixel
 	}
 
-	void render(const Hittable& world, std::ostream& os) {
-		os << "P3\n" << imageWidth_ << ' ' << static_cast<int>(imageWidth_ / aspectRatio_) << "\n255\n";
-
+	void render(const Hittable& world, Framebuffer& fb) {
 		for (int j = 0; j < static_cast<int>(imageWidth_ / aspectRatio_); j++) {
 			std::clog << "\rScanlines remaining: " << (static_cast<int>(imageWidth_ / aspectRatio_) - j) << ' ' << std::flush;
 			for (int i = 0; i < imageWidth_; i++) {
+				Colour pixelColour(0, 0, 0);
+
+				for (int s = 0; s < samplesPerPixel_; s++) {
+					Ray r = getRay(i, j);
+					pixelColour += rayColour(r, maxDepth_, world);
+				}
+
+				fb.at(i, j, imageWidth_) = pixelColour * pixelSampleScale_;
+			}
+		}
+
+		std::clog << "\nDone.\n";
+	}
+
+	// Used for multi-threaded rendering!
+	// Give an x,y tile coordinate and size, and render that tile only
+	void renderTile(int tileX, int tileY, int tileWidth, int tileHeight, const Hittable& world, Framebuffer& fb) {
+		int endX = std::min(tileX + tileWidth, imageWidth_);
+		int endY = std::min(tileY + tileHeight, static_cast<int>(imageWidth_ / aspectRatio_));
+
+		for (int j = tileY; j < endY; j++) {
+			for (int i = tileX; i < endX; i++) {
 				Colour pixelColour(0, 0, 0);
 				for (int s = 0; s < samplesPerPixel_; s++) {
 					Ray r = getRay(i, j);
 					pixelColour += rayColour(r, maxDepth_, world);
 				}
-				writeColour(os, pixelColour * pixelSampleScale_);
+
+				fb.at(i, j, imageWidth_) = pixelColour * pixelSampleScale_;
 			}
 		}
-
-		std::clog << "\nDone.\n";
 	}
 
 private:
@@ -74,7 +94,7 @@ private:
 	double aspectRatio_ = 16.0 / 9.0;
 	int imageWidth_ = 400;
 
-	int samplesPerPixel_ = 100;
+	int samplesPerPixel_ = 200;
 	double pixelSampleScale_ = 1.0 / static_cast<double>(samplesPerPixel_);
 
 	int maxDepth_ = 20;

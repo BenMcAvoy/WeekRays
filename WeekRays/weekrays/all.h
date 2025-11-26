@@ -11,3 +11,4 @@
 #include "vec.h"
 #include "camera.h"
 #include "material.h"
+#include "framebuffer.h"
