@@ -104,13 +104,16 @@ public:
     }
 
 	Vec3 reflected(const Vec3& normal) const {
-		return *this - 2 * dot(*this, normal) * normal;
+		const Vec3& v = *this;
+		return v - 2 * dot(v, normal) * normal;
 	}
 
 	Vec3 refract(const Vec3& normal, double etaRatio) const {
-		auto cosTheta = std::fmin(dot(-(*this), normal), 1.0);
-		Vec3 rOutPerp = etaRatio * (*this + cosTheta * normal);
-		Vec3 rOutParallel = -std::sqrt(1.0 - rOutPerp.lengthSquared()) * normal;
+		const Vec3& uv = *this;
+
+		auto cosTheta = std::fmin(dot(-uv, normal), 1.0);
+		Vec3 rOutPerp = etaRatio * (uv + cosTheta * normal);
+		Vec3 rOutParallel = -std::sqrt(std::fabs(1.0 - rOutPerp.lengthSquared())) * normal;
 		return rOutPerp + rOutParallel;
 	}
 

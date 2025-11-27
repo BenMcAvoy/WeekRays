@@ -78,8 +78,8 @@ private:
 			return { 0, 0, 0 };
 		}
 
-		Vec3 unit_direction = r.direction().normalized();
-		auto a = 0.5 * (unit_direction.y() + 1.0);
+		Vec3 unitDir = r.direction().normalized();
+		auto a = 0.1 * (unitDir.y() + 1.0);
 		return (1.0 - a) * Colour(1.0, 1.0, 1.0) + a * Colour(0.5, 0.7, 1.0);
 	}
 
