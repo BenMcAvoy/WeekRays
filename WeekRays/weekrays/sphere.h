@@ -4,7 +4,7 @@
 
 class Sphere : public Hittable {
 public:
-	Sphere(const Vec3& center, double radius, std::shared_ptr<Material> material)
+	Sphere(const Vec3& center, double radius, Material* material)
 		: center_{ center }, radius_{ radius }, material_{ material } {
 	}
 
@@ -40,5 +40,5 @@ public:
 private:
 	Vec3 center_;
 	double radius_;
-	std::shared_ptr<Material> material_;
+	Material* material_;
 };

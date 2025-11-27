@@ -11,7 +11,7 @@ struct HitRecord {
 
 	bool frontFace;
 
-	std::shared_ptr<Material> material;
+	Material* material;
 
 	void setFaceNormal(const Ray& r, const Vec3& outwardNormal) {
 		frontFace = dot(r.direction(), outwardNormal) < 0;

@@ -22,21 +22,21 @@ static void worker(int totalTiles, int tilesX, int tileWidth, int tileHeight, Ca
 }
 
 int main() {
-	auto matGround = std::make_shared<Lambertian>(Colour(1.0, 1.0, 1.0));
+	auto matGround = Lambertian{ {1.0, 1.0, 1.0} };
 
-	auto matCenter = std::make_shared<Lambertian>(Colour(0.8, 0.7, 0.8));
+	auto matCenter = Lambertian{ {0.8, 0.7, 0.8} };
 
-	auto matLeft = std::make_shared<Dielectric>(1.5);
-	auto matLeftInner = std::make_shared<Dielectric>(1.0 / 1.5); // air
+	auto matLeft = Dielectric{ 1.5 };
+	auto matLeftInner = Dielectric{ 1.0 / 1.5 }; // air
 
-	auto matRight = std::make_shared<Metal>(Colour(0.8, 0.6, 0.2), 0.1);
+	auto matRight = Metal{ Colour(0.8, 0.6, 0.2), 0.1 };
 
 	HittableList world;
-	world.add<Sphere>(Vec3(0, 0, -1), 0.5, matCenter);
-	world.add<Sphere>(Vec3(0, -100.5, -1), 100, matGround);
-	world.add<Sphere>(Vec3(-1, 0, -1), 0.5, matLeft);
-	world.add<Sphere>(Vec3(-1, 0, -1), 0.4, matLeftInner); // hollow sphere
-	world.add<Sphere>(Vec3(1, 0, -1), 0.5, matRight);
+	world.add<Sphere>(Vec3(0, 0, -1), 0.5, &matCenter);
+	world.add<Sphere>(Vec3(0, -100.5, -1), 100, &matGround);
+	world.add<Sphere>(Vec3(-1, 0, -1), 0.5, &matLeft);
+	world.add<Sphere>(Vec3(-1, 0, -1), 0.4, &matLeftInner); // hollow sphere
+	world.add<Sphere>(Vec3(1, 0, -1), 0.5, &matRight);
 
 	Framebuffer framebuffer(WIDTH, HEIGHT);
 	Camera camera(WIDTH, HEIGHT);
