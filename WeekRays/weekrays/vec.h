@@ -107,6 +107,13 @@ public:
 		return *this - 2 * dot(*this, normal) * normal;
 	}
 
+	Vec3 refract(const Vec3& normal, double etaRatio) const {
+		auto cosTheta = std::fmin(dot(-(*this), normal), 1.0);
+		Vec3 rOutPerp = etaRatio * (*this + cosTheta * normal);
+		Vec3 rOutParallel = -std::sqrt(1.0 - rOutPerp.lengthSquared()) * normal;
+		return rOutPerp + rOutParallel;
+	}
+
 	static Vec3 random() {
 		return Vec3(randomDouble(), randomDouble(), randomDouble());
 	}

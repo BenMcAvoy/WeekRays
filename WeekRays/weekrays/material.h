@@ -38,17 +38,58 @@ private:
 
 class Metal : public Material {
 public:
-	Metal(const Vec3& albedo) : albedo_{ albedo } {}
+	Metal(const Vec3& albedo, double fuzz) : albedo_{ albedo }, fuzz_{ fuzz < 1 ? fuzz : 1 } {}
 
 	bool scatter(
 		const Ray& rayIn, const HitRecord& rec, Vec3& attenuation, Ray& scattered
 	) const override {
 		Vec3 reflected = rayIn.direction().reflected(rec.normal);
+		reflected = reflected.normalized() + (fuzz_ * Vec3::randomUnit());
 		scattered = Ray(rec.point, reflected);
 		attenuation = albedo_;
-		return true;
+
+		return (dot(scattered.direction(), rec.normal) > 0);
 	}
 
 private:
 	Vec3 albedo_;
+	double fuzz_;
+};
+
+class Dielectric : public Material {
+public:
+	Dielectric(double refractiveIndex) : refractiveIndex_{ refractiveIndex } {}
+
+	bool scatter(
+		const Ray& rayIn, const HitRecord& rec, Vec3& attenuation, Ray& scattered
+	) const override {
+		attenuation = { 1.0, 1.0, 1.0 };
+		double ri = rec.frontFace ? (1.0 / refractiveIndex_) : refractiveIndex_;
+
+		Vec3 unitDirection = rayIn.direction().normalized();
+		double cosTheta = std::fmin(dot(-unitDirection, rec.normal), 1.0);
+		double sinTheta = std::sqrt(1.0 - cosTheta * cosTheta);
+
+		bool cannotRefract = ri * sinTheta > 1.0;
+		Vec3 direction;
+
+		if (cannotRefract || reflectance(cosTheta, ri) > randomDouble())
+			direction = unitDirection.reflected(rec.normal);
+		else
+			direction = unitDirection.refract(rec.normal, ri);
+
+		scattered = Ray(rec.point, direction);
+		return true;
+	}
+
+private:
+	static double reflectance(double cosine, double refractiveIndex) {
+		// Use Schlick's approximation for reflectance
+
+		auto r0 = (1 - refractiveIndex) / (1 + refractiveIndex);
+		r0 = r0 * r0;
+		return r0 + (1 - r0) * std::pow((1 - cosine), 5);
+	}
+
+	double refractiveIndex_;
 };

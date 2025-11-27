@@ -32,7 +32,6 @@ public:
 		rec.point = r.at(rec.t);
 		Vec3 outwardNormal = (rec.point - center_) / radius_;
 		rec.setFaceNormal(r, outwardNormal);
-		rec.normal = (rec.point - center_) / radius_;
 		rec.material = material_;
 
 		return true;
